@@ -48,12 +48,4 @@ Orders.getLayout = function getLayout(page) {
   )
 }
 
-// list all saved changes that I made in this module in comments below, so I can list in a PR:
-// Displayed `completed_date` in the table
-// Calculated the total price of the order by summing the price of each product in the order
-// Displayed the merchant name of the payment type in the table
 
-
-// API
-// Added a PaymentSerializer to order.py
-// Updated the OrderSerializer to include the embedded payment_type field
