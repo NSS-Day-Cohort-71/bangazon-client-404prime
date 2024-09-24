@@ -24,9 +24,11 @@ export default function Orders() {
           {
             orders.map((order) => (
               <tr key={order.id}>
-                <td>{order.completed_on}</td>
-                <td>${order.total}</td>
-                <td>{order.payment_type?.obscured_num}</td>
+                <td>{new Date(order.completed_date).toLocaleDateString()}</td>
+                <td>${order.lineitems.reduce((total, lineitem) => {
+                  return total + (lineitem.product.price)
+                }, 0).toFixed(2)}</td>
+                <td>{order.payment_type?.merchant_name}</td>
               </tr>
             ))
           }
@@ -45,3 +47,5 @@ Orders.getLayout = function getLayout(page) {
     </Layout>
   )
 }
+
+
