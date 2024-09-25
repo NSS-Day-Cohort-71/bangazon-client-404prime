@@ -5,6 +5,8 @@ import Modal from "../modal"
 export default function AddPaymentModal({ showModal, setShowModal, addNewPayment }) {
   const merchantNameInput = useRef()
   const acctNumInput = useRef()
+  const expDateInput = useRef()
+
   return (
     <Modal showModal={showModal} setShowModal={setShowModal} title="Add New Payment Method">
       <>
@@ -20,13 +22,20 @@ export default function AddPaymentModal({ showModal, setShowModal, addNewPayment
           label="Account Number"
           refEl={acctNumInput}
         />
+        <Input
+        id="expDate"
+        type="text"
+        label="Expiration Date"
+        refEl={expDateInput}
+        />
       </>
       <>
         <button
           className="button is-success"
           onClick={() => addNewPayment({
-            acctNumber: acctNumInput.current.value,
-            merchant: merchantNameInput.current.value
+            account_number: acctNumInput.current.value,
+            merchant_name: merchantNameInput.current.value,
+            expiration_date: expDateInput.current.value
           })}
         >Add Payment Method</button>
         <button className="button" onClick={() => setShowModal(false)}>Cancel</button>
