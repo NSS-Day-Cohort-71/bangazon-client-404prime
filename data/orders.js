@@ -27,8 +27,9 @@ export function completeCurrentOrder(orderId, paymentTypeId) {
   });
 }
 
+
 export function clearCart(orderId) {
-  return fetchWithoutResponse(`orders/${orderId}/clear-cart`, {
+  return fetchWithoutResponse(`orders/${orderId}/clear_cart`, {
     method: "DELETE",
     headers: {
       Authorization: `Token ${localStorage.getItem("token")}`,
