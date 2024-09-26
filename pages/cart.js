@@ -44,7 +44,9 @@ export default function Cart() {
   };
 
   const deleteCurrentOrder = (orderId) => {
-    clearCart(orderId).then(refresh);
+    clearCart(orderId).then(() => {
+      refresh();
+    });
   };
 
   return (
@@ -64,7 +66,10 @@ export default function Cart() {
           >
             Complete Order
           </a>
-          <a className="card-footer-item" onClick={() => deleteCurrentOrder()}>
+          <a
+            className="card-footer-item"
+            onClick={() => deleteCurrentOrder(cart.id)}
+          >
             Delete Order
           </a>
         </>
