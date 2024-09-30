@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function Detail({ store, isOwner, favorite, unfavorite }) {
+export default function Detail({ store, isOwner, favorite, unfavorite, favorites }) {
   const ownerButtons = () => {
     return (
       <div className="buttons">
@@ -14,10 +14,11 @@ export default function Detail({ store, isOwner, favorite, unfavorite }) {
     )
   }
   const userButtons = () => {
+    const isFavorite = favorites.some(fav => fav.seller.store.id === store.id)
     return (
       <>
         {
-          store.is_favorite ?
+          isFavorite ?
             <button className="button is-primary is-inverted" onClick={unfavorite}>
               <span className="icon is-small">
                 <i className="fas fa-heart-broken"></i>
