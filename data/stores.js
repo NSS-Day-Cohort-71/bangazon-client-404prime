@@ -51,16 +51,16 @@ export function favoriteStore(storeId) {
   })
 }
 
-export function unfavoriteStore(storeId) {
-  return fetchWithoutResponse(`stores/${storeId}/unfavorite`, {
+export function unfavoriteStore(favoriteId) {
+  return fetchWithoutResponse(`profile/favoritesellers`, {
     method: 'DELETE',
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`,
       'Content-Type': 'application/json'
     },
+    body: JSON.stringify({ favorite_id: favoriteId })
   })
 }
-
 
 export const getFavoriteStores = async () => {
   return await fetchWithResponse('profile/favoritesellers', {
