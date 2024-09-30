@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { getProducts } from '../../data/products';
 
 export function StoreCard({ store, width = 'is-half' }) {
   // Determine which data structure we're dealing with
@@ -6,6 +8,28 @@ export function StoreCard({ store, width = 'is-half' }) {
     store.seller && store.seller.store ? store.seller.store : store;
   const ownerData =
     store.seller && store.seller.user ? store.seller.user : store.seller;
+  const [storeItems, setStoreItems] = useState([]);
+  const [loadingMessage, setLoadingMessage] = useState('Loading products...');
+  const [locations, setLocations] = useState([]);
+
+  useEffect(() => {
+    getProducts().then((data) => {
+      if (data) {
+        const locationData = [
+          ...new Set(data.map((product) => product.location)),
+        ];
+        const locationObjects = locationData.map((location) => ({
+          id: location,
+          name: location,
+        }));
+
+        setStoreItems(
+          data.filter((p) => p.customer?.user?.id === store.seller.id)
+        );
+        setLocations(locationObjects);
+      }
+    });
+  }, []);
 
   return (
     <div className={`column ${width}`}>
@@ -21,6 +45,9 @@ export function StoreCard({ store, width = 'is-half' }) {
           </p>
           <div className="content">
             {storeData.description || 'No description available'}
+          </div>
+          <div className="content">
+            Items for sale: {storeData.items_for_sale}
           </div>
         </div>
 
