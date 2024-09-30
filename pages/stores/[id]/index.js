@@ -6,7 +6,7 @@ import { ProductCard } from '../../../components/product/card'
 import Detail from '../../../components/store/detail'
 import { useAppContext } from '../../../context/state'
 import { deleteProduct } from '../../../data/products'
-import { favoriteStore, getStoreById, unfavoriteStore } from '../../../data/stores'
+import { favoriteStore, getFavoriteStores, getStoreById, unfavoriteStore } from '../../../data/stores'
 
 export default function StoreDetail() {
   const { profile } = useAppContext()
@@ -14,6 +14,7 @@ export default function StoreDetail() {
   const { id } = router.query
   const [store, setStore] = useState({})
   const [isOwner, setIsOwner] = useState(false)
+  const [favorites, setFavorites] = useState([])
 
   useEffect(() => {
     if (id) {
@@ -22,6 +23,16 @@ export default function StoreDetail() {
     if (parseInt(id) === profile.store?.id) {
       setIsOwner(true)
     }
+  
+    const fetchFavorites = async () => {
+      try {
+        const data = await getFavoriteStores()
+        setFavorites(data)
+      } catch (error) {
+      }
+    }
+  
+    fetchFavorites()
   }, [id, profile])
 
   const refresh = () => getStoreById(id).then(storeData => {
@@ -44,7 +55,7 @@ export default function StoreDetail() {
 
   return (
     <>
-      <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} />
+      <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
       <div className="columns is-multiline">
         {
           store.products?.map(product => (
