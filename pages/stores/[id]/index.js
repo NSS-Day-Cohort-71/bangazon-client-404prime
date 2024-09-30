@@ -46,11 +46,24 @@ export default function StoreDetail() {
   }
 
   const favorite = () => {
-    favoriteStore(id).then(refresh)
+    favoriteStore(id)
+      .then(() => getFavoriteStores())
+      .then(data => {
+        setFavorites(data)
+      })
+      .catch(error => console.error("Error favoriting store:", error))
   }
 
   const unfavorite = () => {
-    unfavoriteStore(id).then(refresh)
+    const favoriteId = favorites.find(fav => fav.seller.store.id === parseInt(id))?.id
+    if (favoriteId) {
+      unfavoriteStore(favoriteId)
+        .then(() => getFavoriteStores())
+        .then(data => {
+          setFavorites(data)
+        })
+        .catch(error => console.error("Error unfavoriting store:", error))
+    }
   }
 
   return (
