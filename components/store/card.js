@@ -59,8 +59,8 @@ export function StoreCard({ store, width = 'is-half' }) {
             View Store
           </Link>
           <div className="columns is-multiline">
-            {storeItems.map((p) => (
-              <ProductCard product={p} key={p.id} />
+            {storeItems.map((product) => (
+              <ProductCard product={product} key={product.id} />
             ))}
           </div>
         </footer>
