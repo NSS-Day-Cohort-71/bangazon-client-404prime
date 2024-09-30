@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getProducts } from '../../data/products';
+import Filter from '../filter';
+import { ProductCard } from '../product/card';
 
 export function StoreCard({ store, width = 'is-half' }) {
   // Determine which data structure we're dealing with
@@ -23,9 +25,7 @@ export function StoreCard({ store, width = 'is-half' }) {
           name: location,
         }));
 
-        setStoreItems(
-          data.filter((p) => p.customer?.user?.id === store.seller.id)
-        );
+        setStoreItems(data.filter((p) => p.store.id === store.id));
         setLocations(locationObjects);
       }
     });
@@ -58,6 +58,11 @@ export function StoreCard({ store, width = 'is-half' }) {
           >
             View Store
           </Link>
+          <div className="columns is-multiline">
+            {storeItems.map((p) => (
+              <ProductCard product={p} key={p.id} />
+            ))}
+          </div>
         </footer>
       </div>
     </div>
