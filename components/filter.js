@@ -107,10 +107,10 @@ export default function Filter({ productCount, onSearch, locations }) {
               <div className="dropdown-content">
                 <div className="dropdown-item">
                   <Select
-                    refEl={refEls.location}
                     options={locations}
                     title="Filter by Location"
                     addlClass="is-fullwidth"
+                    refEl={refEls.location}
                   />
                 </div>
                 <hr className="dropdown-divider"></hr>
