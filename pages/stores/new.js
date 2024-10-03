@@ -24,7 +24,7 @@ export default function NewStore() {
         if (res && res.id) {
           setProfile({
             ...profile,
-            store: res
+            stores: [...profile.stores, res]
           });
           router.push(`/stores/${res.id}`);
         } else {
