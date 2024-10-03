@@ -17,7 +17,7 @@ export function getStoreById(id) {
 }
 
 export function addStore(store) {
-  return fetchWithResponse(`stores`, {
+  return fetch(`http://localhost:8000/stores`, {
     method: 'POST',
     headers: {
       Authorization: `Token ${localStorage.getItem('token')}`,
@@ -25,6 +25,19 @@ export function addStore(store) {
     },
     body: JSON.stringify(store)
   })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    return data;
+  })
+  .catch(error => {
+    console.error('Error in addStore:', error);
+    throw error;
+  });
 }
 
 export function editStore(store) {

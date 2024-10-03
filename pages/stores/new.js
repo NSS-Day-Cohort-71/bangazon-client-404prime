@@ -14,17 +14,27 @@ export default function NewStore() {
   const router = useRouter()
 
   const saveStore = () => {
-    addStore({
+    const storeData = {
       name: nameEl.current.value,
       description: descriptionEl.current.value
-    }).then((res) => {
-      setProfile({
-        ...profile,
-        store: res
+    };
+    
+    addStore(storeData)
+      .then(res => {
+        if (res && res.id) {
+          setProfile({
+            ...profile,
+            stores: [...profile.stores, res]
+          });
+          router.push(`/stores/${res.id}`);
+        } else {
+          console.error('Store created but no ID returned:', res);
+        }
       })
-      router.push(`/stores/${res.id}`)
-    })
-  }
+      .catch(error => {
+        console.error('Error saving store:', error);
+      });
+  };
 
   return (
     <StoreForm nameEl={nameEl} descriptionEl={descriptionEl} saveEvent={saveStore} router={router} title="Create your store">
