@@ -72,11 +72,14 @@ export default function StoreDetail() {
   }
 
   return (
-    <>
-      <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
+    <div className="container">
+    <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
+    
+    <section className="section">
+      <h2 className="title is-3 has-text-primary">Selling</h2>
       <div className="columns is-multiline">
         {
-          store.products?.map(product => (
+          store.products?.filter(product => !product.sold).map(product => (
             <ProductCard
               product={product}
               key={product.id}
@@ -86,13 +89,32 @@ export default function StoreDetail() {
           ))
         }
         {
-          store.products?.length === 0 ?
-            <p>There's no products yet</p>
-            :
-            <></>
+          store.products?.filter(product => !product.sold).length === 0 &&
+            <p className="column is-full has-text-centered">There are no products currently for sale.</p>
         }
       </div>
-    </>
+    </section>
+
+    <section className="section">
+      <h2 className="title is-3 has-text-success">Sold</h2>
+      <div className="columns is-multiline">
+        {
+          store.products?.filter(product => product.sold).map(product => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              isOwner={isOwner}
+              removeProduct={removeProduct}
+            />
+          ))
+        }
+        {
+          store.products?.filter(product => product.sold).length === 0 &&
+            <p className="column is-full has-text-centered">No products have been sold yet.</p>
+        }
+      </div>
+    </section>
+  </div>
   )
 }
 
