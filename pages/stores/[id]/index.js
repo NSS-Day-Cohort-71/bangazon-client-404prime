@@ -5,7 +5,7 @@ import Navbar from '../../../components/navbar'
 import { ProductCard } from '../../../components/product/card'
 import Detail from '../../../components/store/detail'
 import { useAppContext } from '../../../context/state'
-import { deleteProduct, getProducts } from '../../../data/products'
+import { deleteProduct, fetchSoldProductsByStore, getProducts } from '../../../data/products'
 import { favoriteStore, getFavoriteStores, getStoreById, unfavoriteStore } from '../../../data/stores'
 
 export default function StoreDetail() {
@@ -16,6 +16,7 @@ export default function StoreDetail() {
   const [isOwner, setIsOwner] = useState(false)
   const [favorites, setFavorites] = useState([])
   const [products, setProducts] = useState([])
+  const [soldProducts, setSoldProducts] = useState([])
 
   useEffect(() => {
 
@@ -31,7 +32,7 @@ export default function StoreDetail() {
       }
     }
 
-    // fetch products by store Id
+    // fetch all products by store Id
     const fetchProducts = async () => {
       try {
         const query = `store_id=${id}`
@@ -41,7 +42,12 @@ export default function StoreDetail() {
         console.error("Error fetching products:", error)
       }
     }
-  
+
+      //FIXME: fix this fetch
+    const fetchSoldProducts = async () => {
+      const soldData = await fetchSoldProductsByStore({id})
+    }
+    
     // fetch to see if this is a favorited store
     const fetchFavorites = async () => {
       try {
