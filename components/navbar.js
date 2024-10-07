@@ -91,6 +91,7 @@ export default function Navbar() {
         <div className="navbar-start">
           <Link href="/products" className="navbar-item">Products</Link>
           <Link href="/stores" className="navbar-item">Stores</Link>
+          <Link href={`/stores/${profile.stores[0].id}`} className="navbar-item">My Store</Link>
         </div>
         <div className="navbar-end">
           {

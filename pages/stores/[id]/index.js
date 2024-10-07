@@ -17,11 +17,16 @@ export default function StoreDetail() {
   const [favorites, setFavorites] = useState([])
 
   useEffect(() => {
+
     if (id) {
       refresh()
     }
-    if (parseInt(id) === profile.store?.id) {
-      setIsOwner(true)
+
+    if (profile && profile.stores && profile.stores.length > 0) {
+      const userStore = profile.stores[0]
+      if (parseInt(id) === userStore.id) {
+        setIsOwner(true)
+      }
     }
   
     const fetchFavorites = async () => {
