@@ -5,7 +5,7 @@ import Navbar from '../../../components/navbar'
 import { ProductCard } from '../../../components/product/card'
 import Detail from '../../../components/store/detail'
 import { useAppContext } from '../../../context/state'
-import { deleteProduct } from '../../../data/products'
+import { deleteProduct, getProducts } from '../../../data/products'
 import { favoriteStore, getFavoriteStores, getStoreById, unfavoriteStore } from '../../../data/stores'
 
 export default function StoreDetail() {
@@ -15,6 +15,7 @@ export default function StoreDetail() {
   const [store, setStore] = useState({})
   const [isOwner, setIsOwner] = useState(false)
   const [favorites, setFavorites] = useState([])
+  const [products, setProducts] = useState([])
 
   useEffect(() => {
 
@@ -22,13 +23,26 @@ export default function StoreDetail() {
       refresh()
     }
 
+    // Check if this is the owner's store
     if (profile && profile.stores && profile.stores.length > 0) {
       const userStore = profile.stores[0]
       if (parseInt(id) === userStore.id) {
         setIsOwner(true)
       }
     }
+
+    // fetch products by store Id
+    const fetchProducts = async () => {
+      try {
+        const query = `store_id=${id}`
+        const productsData = await getProducts(query)
+        setProducts(productsData)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      }
+    }
   
+    // fetch to see if this is a favorited store
     const fetchFavorites = async () => {
       try {
         const data = await getFavoriteStores()
@@ -37,6 +51,7 @@ export default function StoreDetail() {
       }
     }
   
+    fetchProducts()
     fetchFavorites()
   }, [id, profile])
 
@@ -72,14 +87,15 @@ export default function StoreDetail() {
   }
 
   return (
-    <div className="container">
-    <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
-    
-    <section className="section">
-      <h2 className="title is-3 has-text-primary">Selling</h2>
-      <div className="columns is-multiline">
-        {
-          store.products?.filter(product => !product.sold).map(product => (
+    <>
+      <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
+      {isOwner && (
+        <div className="section">
+          <div className="columns">
+            <div className="column">
+              <h2 className="title is-4 has-text-primary">Selling</h2>
+              {
+          products?.map(product => (
             <ProductCard
               product={product}
               key={product.id}
@@ -89,17 +105,16 @@ export default function StoreDetail() {
           ))
         }
         {
-          store.products?.filter(product => !product.sold).length === 0 &&
-            <p className="column is-full has-text-centered">There are no products currently for sale.</p>
+          products?.length === 0 ?
+            <p>There's no products yet</p>
+            :
+            <></>
         }
-      </div>
-    </section>
-
-    <section className="section">
-      <h2 className="title is-3 has-text-success">Sold</h2>
-      <div className="columns is-multiline">
-        {
-          store.products?.filter(product => product.sold).map(product => (
+            </div>
+            <div className="column">
+              <h2 className="title is-4 has-text-success">Sold</h2>
+              {
+          products?.sold?.map(product => (
             <ProductCard
               product={product}
               key={product.id}
@@ -109,12 +124,34 @@ export default function StoreDetail() {
           ))
         }
         {
-          store.products?.filter(product => product.sold).length === 0 &&
-            <p className="column is-full has-text-centered">No products have been sold yet.</p>
+          products?.sold?.length === 0 ?
+            <p>There's no products yet</p>
+            :
+            <></>
+        }
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="columns is-multiline">
+        {
+          store.products?.map(product => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              isOwner={isOwner}
+              removeProduct={removeProduct}
+            />
+          ))
+        }
+        {
+          store.products?.length === 0 ?
+            <p>There's no products yet</p>
+            :
+            <></>
         }
       </div>
-    </section>
-  </div>
+    </>
   )
 }
 
