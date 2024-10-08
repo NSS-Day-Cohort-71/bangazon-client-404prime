@@ -13,7 +13,6 @@ export default function Navbar() {
       setIsLoggedIn(true);
     }
   }, [token]);
-  //hi its zach
 
   const showMobileNavbar = () => {
     hamburger.current.classList.toggle('is-active');
