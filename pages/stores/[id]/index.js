@@ -5,7 +5,7 @@ import Navbar from '../../../components/navbar'
 import { ProductCard } from '../../../components/product/card'
 import Detail from '../../../components/store/detail'
 import { useAppContext } from '../../../context/state'
-import { deleteProduct } from '../../../data/products'
+import { deleteProduct, fetchSoldProductsByStore, getProducts } from '../../../data/products'
 import { favoriteStore, getFavoriteStores, getStoreById, unfavoriteStore } from '../../../data/stores'
 
 export default function StoreDetail() {
@@ -15,24 +15,51 @@ export default function StoreDetail() {
   const [store, setStore] = useState({})
   const [isOwner, setIsOwner] = useState(false)
   const [favorites, setFavorites] = useState([])
+  const [products, setProducts] = useState([])
+  const [soldProducts, setSoldProducts] = useState([])
 
   useEffect(() => {
     if (id) {
       refresh()
-    }
-    if (parseInt(id) === profile.store?.id) {
-      setIsOwner(true)
-    }
   
-    const fetchFavorites = async () => {
-      try {
-        const data = await getFavoriteStores()
-        setFavorites(data)
-      } catch (error) {
+      // Check if this is the owner's store
+      if (profile && profile.stores && profile.stores.length > 0) {
+        const userStore = profile.stores[0]
+        if (parseInt(id) === userStore.id) {
+          setIsOwner(true)
+        }
       }
-    }
   
-    fetchFavorites()
+      // fetch all products by store Id
+      const fetchProducts = async () => {
+        try {
+          const query = `store_id=${id}`
+          const productsData = await getProducts(query)
+          setProducts(productsData)
+        } catch (error) {
+          console.error("Error fetching products:", error)
+        }
+      }
+  
+      const fetchSoldProducts = async () => {
+        const soldData = await fetchSoldProductsByStore(id)
+        setSoldProducts(soldData) 
+      }
+      
+      // fetch to see if this is a favorited store
+      const fetchFavorites = async () => {
+        try {
+          const data = await getFavoriteStores()
+          setFavorites(data)
+        } catch (error) {
+          console.error("Error fetching favorites:", error)
+        }
+      }
+      
+      fetchSoldProducts()
+      fetchProducts()
+      fetchFavorites()
+    }
   }, [id, profile])
 
   const refresh = () => getStoreById(id).then(storeData => {
@@ -69,6 +96,50 @@ export default function StoreDetail() {
   return (
     <>
       <Detail store={store} isOwner={isOwner} favorite={favorite} unfavorite={unfavorite} favorites={favorites} />
+      {isOwner && (
+        <div className="section">
+          <div className="columns">
+            <div className="column">
+              <h2 className="title is-4 has-text-primary">Selling</h2>
+              {
+          products?.map(product => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              isOwner={isOwner}
+              removeProduct={removeProduct}
+            />
+          ))
+        }
+        {
+          products?.length === 0 ?
+            <p>There's no products yet</p>
+            :
+            <></>
+        }
+            </div>
+            <div className="column">
+              <h2 className="title is-4 has-text-success">Sold</h2>
+              {
+          soldProducts?.map(product => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              isOwner={isOwner}
+              removeProduct={removeProduct}
+            />
+          ))
+        }
+        {
+          soldProducts?.length === 0 ?
+            <p>There's no products yet</p>
+            :
+            <></>
+        }
+            </div>
+          </div>
+        </div>
+      )}
       <div className="columns is-multiline">
         {
           store.products?.map(product => (

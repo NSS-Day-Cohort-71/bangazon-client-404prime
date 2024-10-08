@@ -14,6 +14,14 @@ export function getProducts(query = undefined) {
   });
 }
 
+export function fetchSoldProductsByStore(storeId) {
+  return fetchWithResponse(`products?store_id=${storeId}&sold_only=true`, {
+    headers: {
+      Authorization: `Token ${localStorage.getItem("token")}`,
+    },
+  });
+}
+
 export function getCategories() {
   return fetchWithResponse("categories", {
     headers: {

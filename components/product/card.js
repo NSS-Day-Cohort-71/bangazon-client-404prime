@@ -6,7 +6,7 @@ export function ProductCard({ product, removeProduct, isOwner = false, width="is
       <div className="card">
         <div className="card-image">
           <figure className="image is-4by3">
-            <img src={product.image_path} alt="Placeholder image"></img>
+            <img src="/images/Placeholder.png" alt="Placeholder image"></img>
           </figure>
         </div>
         <header className="card-header">
