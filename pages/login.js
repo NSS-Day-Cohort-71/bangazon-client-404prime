@@ -5,28 +5,33 @@ import { Input } from '../components/form-elements'
 import Layout from '../components/layout'
 import Navbar from '../components/navbar'
 import { useAppContext } from '../context/state'
-import { login } from '../data/auth'
+import { getUserProfile, login } from '../data/auth'
 
 export default function Login() {
-  const {setToken} = useAppContext()
+  const {setToken, setProfile} = useAppContext()
   const username = useRef('')
   const password = useRef('')
   const router = useRouter()
 
   const submit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const user = {
       username: username.current.value,
       password: password.current.value,
-    }
+    };
 
     login(user).then((res) => {
       if (res.token) {
-        setToken(res.token)
-        router.push('/')
+        localStorage.setItem('token', res.token); // Ensure token is saved
+        setToken(res.token);
+        // Fetch profile after setting the token
+        getUserProfile().then(profileData => {
+          setProfile(profileData); // Set profile in context
+          router.push('/');
+        });
       }
-    })
-  }
+    });
+  };
 
   return (
     <div className="columns is-centered">
