@@ -8,24 +8,22 @@ export function AppWrapper({ children }) {
   const [profile, setProfile] = useState({})
   const [token, setToken] = useState("")
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   useEffect(() => {
-    setToken(localStorage.getItem('token'))
-  }, [])
-
-  useEffect(() => {
-    const authRoutes = ['/login', '/register']
-    if (token) {
-      localStorage.setItem('token', token)
-      if (!authRoutes.includes(router.pathname)) {
-        getUserProfile().then((profileData) => {
-          if (profileData) {
-            setProfile(profileData)
-          }
-        })
-      }
+    const storedToken = localStorage.getItem('token');
+    setToken(storedToken);
+    if (storedToken) {
+      getUserProfile().then((profileData) => {
+        setProfile(profileData);
+        setIsLoading(false); // Profile fetched, stop loading
+      });
+    } else {
+      setIsLoading(false); // No token, stop loading
     }
-  }, [token])
+  }, [token]);
+
+  if (isLoading) return <div>Loading...</div>; // Optionally show a loading spinner
 
   return (
     <AppContext.Provider value={{ profile, token, setToken, setProfile }}>
