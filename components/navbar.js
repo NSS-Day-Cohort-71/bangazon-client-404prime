@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useAppContext } from '../context/state';
 
 export default function Navbar() {
-  const { token, profile } = useAppContext();
+  const { token, profile, setProfile } = useAppContext();
   const hamburger = useRef();
   const navbar = useRef();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -63,6 +63,7 @@ export default function Navbar() {
             onClick={() => {
               localStorage.removeItem('token');
               setIsLoggedIn(false);
+              setProfile({})
             }}
           >
             Log out
