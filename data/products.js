@@ -102,14 +102,17 @@ export function editProduct(id, product) {
   });
 }
 
-export function recommendProduct(id, username) {
-  return fetchWithResponse(`products/${id}/recommend`, {
+export function recommendProduct(productId, recommenderId, recipientId) {
+  return fetchWithResponse(`products/${productId}/recommend`, {
     method: "POST",
     headers: {
       Authorization: `Token ${localStorage.getItem("token")}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username }),
+    body: JSON.stringify({ 
+      recommender_id: recommenderId, 
+      recipient_id: recipientId
+     }),
   });
 }
 
