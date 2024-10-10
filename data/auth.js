@@ -27,3 +27,11 @@ export function getUserProfile() {
     },
   });
 }
+
+export function getUsers() {
+  return fetchWithResponse("users", {
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}

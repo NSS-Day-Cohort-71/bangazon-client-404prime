@@ -1,9 +1,10 @@
 import { useRouter } from "next/router"
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { addProductToOrder, recommendProduct } from "../../data/products"
 import Modal from "../modal"
 import { Input } from "../form-elements"
 import { useAppContext } from "../../context/state"
+import { getUsers } from "../../data/auth"
 
 export function Detail({ product, like, unlike }) {
   const router = useRouter()
@@ -15,17 +16,23 @@ export function Detail({ product, like, unlike }) {
   console.log("Profile details:", profile)
 
   useEffect(() => {
-    const getUsers = getUsers((data) => {
+    fetchUsers()
+  }, [])
+
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers()
+      console.log("Users data received:", data)
       setUsers(data)
-    })
-  }, [profile])
+    } catch (error) {
+      console.error("Error fetching users:", error)
+    }
+  }
 
-  // write someone's username
-  // fetch users from the db
-  // find the username match in usernames
-  // return the id that matches the username
-
-
+  const getTargetUserIdFromUsername = (username) => {
+    const user = users.find(user => user.username.toLowerCase() === username.toLowerCase())
+    return user ? user.id : undefined
+  }
 
   const addToCart = () => {
     addProductToOrder(product.id).then(() => {
@@ -40,16 +47,33 @@ export function Detail({ product, like, unlike }) {
       //FIXME: ??? === recipient_id
 
   const recommendProductEvent = () => {
-    recommendProduct(profile.id, product.id, usernameEl.current.value).then((res) => {
-      if (res) {
-        setShowError(true)
-      } else {
-        setShowModal(false)
-        setShowError(false)
-        usernameEl.current.value = ""
-      }
-    })
+    const recipientId = getTargetUserIdFromUsername(usernameEl.current.value)
+    if (recipientId) {
+      recommendProduct(product.id, profile.id, recipientId).then((res) => {
+        if (res) {
+          setShowError(true)
+        } else {
+          setShowModal(false)
+          setShowError(false)
+          usernameEl.current.value = ""
+        }
+      })
+    } else {
+      setShowError(true)
+    }
   }
+
+  // const recommendProductEvent = () => {
+  //   recommendProduct(product.id, profile.id, usernameEl.current.value).then((res) => {
+  //     if (res) {
+  //       setShowError(true)
+  //     } else {
+  //       setShowModal(false)
+  //       setShowError(false)
+  //       usernameEl.current.value = ""
+  //     }
+  //   })
+  // }
 
   return (
     <>
