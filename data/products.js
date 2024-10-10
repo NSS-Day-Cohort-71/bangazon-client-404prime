@@ -102,6 +102,7 @@ export function editProduct(id, product) {
   });
 }
 
+//FIXME:
 export function recommendProduct(id, username) {
   return fetchWithResponse(`products/${id}/recommend`, {
     method: "POST",

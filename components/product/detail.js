@@ -3,12 +3,28 @@ import { useState, useRef } from "react"
 import { addProductToOrder, recommendProduct } from "../../data/products"
 import Modal from "../modal"
 import { Input } from "../form-elements"
+import { useAppContext } from "../../context/state"
 
 export function Detail({ product, like, unlike }) {
   const router = useRouter()
   const usernameEl = useRef()
   const [showModal, setShowModal] = useState(false)
   const [showError, setShowError] = useState(false)
+  const { profile } = useAppContext()
+  const [users, setUsers] = useState([])
+  console.log("Profile details:", profile)
+
+  useEffect(() => {
+    const getUsers = getUsers((data) => {
+      setUsers(data)
+    })
+  }, [profile])
+
+  // write someone's username
+  // fetch users from the db
+  // find the username match in usernames
+  // return the id that matches the username
+
 
 
   const addToCart = () => {
@@ -17,8 +33,14 @@ export function Detail({ product, like, unlike }) {
     })
   }
 
+  // currently only sending the username (found in the services)
+  // need to structure a product_id. recipient_id, and recommender_id
+      //profile.id === recommender_id
+      //FIXME: product_id ???
+      //FIXME: ??? === recipient_id
+
   const recommendProductEvent = () => {
-    recommendProduct(product.id, usernameEl.current.value).then((res) => {
+    recommendProduct(profile.id, product.id, usernameEl.current.value).then((res) => {
       if (res) {
         setShowError(true)
       } else {
