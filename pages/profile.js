@@ -1,20 +1,32 @@
-import { useEffect, useState } from 'react'
-import CardLayout from '../components/card-layout'
-import Layout from '../components/layout'
-import Navbar from '../components/navbar'
-import { ProductCard } from '../components/product/card'
-import { StoreCard } from '../components/store/card'
-import { useAppContext } from '../context/state'
-import { getUserProfile } from '../data/auth'
-import { getFavoriteStores } from "../data/stores"
+import { useEffect, useState } from 'react';
+import CardLayout from '../components/card-layout';
+import Layout from '../components/layout';
+import Navbar from '../components/navbar';
+import { ProductCard } from '../components/product/card';
+import { StoreCard } from '../components/store/card';
+import { useAppContext } from '../context/state';
+import { getUserProfile } from '../data/auth';
+import { getFavoriteStores } from '../data/stores';
 
 export default function Profile() {
-  const { profile, setProfile } = useAppContext()
-  const [favorites, SetFavorites] = useState([])
+  const { profile, setProfile, token } = useAppContext();
+  const [favorites, SetFavorites] = useState([]);
+  const [likedProducts, setLikedProducts] = useState([]);
 
   useEffect(() => {
-    fetchProfile()
-  }, [])
+    fetchProfile();
+    getLikedProducts();
+  }, []);
+
+  const getLikedProducts = async () => {
+    const res = await fetch('http://localhost:8000/products/liked', {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    });
+    const data = await res.json();
+    setLikedProducts(data);
+  };
 
   useEffect(() => {
     getFavoriteStores()
@@ -22,68 +34,75 @@ export default function Profile() {
         SetFavorites(data);
       })
       .catch((error) => {
-        console.error("Error fetching favorite stores:", error);
+        console.error('Error fetching favorite stores:', error);
       });
   }, []);
-  
+
   const fetchProfile = () => {
     getUserProfile()
       .then((profileData) => {
         if (profileData) {
-          setProfile(profileData)
+          setProfile(profileData);
         }
       })
       .catch((error) => {
-        console.error("Error fetching user profile:", error)
-      })
-  }
-
+        console.error('Error fetching user profile:', error);
+      });
+  };
 
   return (
     <>
       <CardLayout title="Favorite Stores" width="is-full">
         <div className="columns is-multiline">
-          {
-            favorites?.map(favorite => (
-              <StoreCard store={favorite} key={favorite.id} width="is-one-third" />
-            ))
-          }
+          {favorites?.map((favorite) => (
+            <StoreCard
+              store={favorite}
+              key={favorite.id}
+              width="is-one-third"
+            />
+          ))}
         </div>
         <></>
       </CardLayout>
       <CardLayout title="Products you've recommended" width="is-full">
         <div className="columns is-multiline">
-          {
-            profile.recommended_by?.map(recommendation => (
-              <ProductCard product={recommendation.product} key={recommendation.product.id} width="is-one-third" />
-            ))
-          }
+          {profile.recommended_by?.map((recommendation) => (
+            <ProductCard
+              product={recommendation.product}
+              key={recommendation.product.id}
+              width="is-one-third"
+            />
+          ))}
         </div>
         <></>
       </CardLayout>
       <CardLayout title="Products recommended to you" width="is-full">
         <div className="columns is-multiline">
-          {
-            profile.recommendations?.map(recommendation => (
-              <ProductCard product={recommendation.product} key={recommendation.product.id} width="is-one-third" />
-            ))
-          }
+          {profile.recommendations?.map((recommendation) => (
+            <ProductCard
+              product={recommendation.product}
+              key={recommendation.product.id}
+              width="is-one-third"
+            />
+          ))}
         </div>
         <></>
       </CardLayout>
 
       <CardLayout title="Products you've liked" width="is-full">
         <div className="columns is-multiline">
-          {
-            profile.likes?.map(product => (
-              <ProductCard product={product} key={product.id} width="is-one-third" />
-            ))
-          }
+          {likedProducts?.map((product) => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              width="is-one-third"
+            />
+          ))}
         </div>
         <></>
       </CardLayout>
     </>
-  )
+  );
 }
 
 Profile.getLayout = function getLayout(page) {
@@ -92,5 +111,5 @@ Profile.getLayout = function getLayout(page) {
       <Navbar />
       <section className="container">{page}</section>
     </Layout>
-  )
-}
+  );
+};
