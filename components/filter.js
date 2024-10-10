@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Input, Select } from "./form-elements";
+import { getCategories } from "../data/products";
 
 export default function Filter({ productCount, onSearch, locations }) {
   const refEls = {
@@ -14,12 +15,13 @@ export default function Filter({ productCount, onSearch, locations }) {
 
   const [showFilters, setShowFilters] = useState(false);
   const [query, setQuery] = useState("");
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Apples" },
-    { id: 2, name: "Oranges" },
-    { id: 3, name: "Lemons" },
-  ]);
+  const [categories, setCategories] = useState([]);
   const [direction, setDirection] = useState("asc");
+
+  // Fetch categories on mount to populate the filter dropdown
+  useEffect(() => {
+    getCategories().then((catData) => setCategories(catData));
+  }, []);
 
   const clear = () => {
     for (let ref in refEls) {
@@ -36,14 +38,11 @@ export default function Filter({ productCount, onSearch, locations }) {
     onSearch(""); // Notify parent to clear the search
   };
 
-  const orderByOptions = [
-    { id: "price", name: "Price" },
-    { id: "name", name: "Name" },
-  ];
-
   const buildQuery = (key, value) => {
     if (value && value !== "0") {
-      return `${key}=${value}&`;
+      // Changed category key to category_id to match API
+      const queryKey = key === "category" ? "category_id" : key;
+      return `${queryKey}=${value}&`;
     }
     return "";
   };
@@ -56,7 +55,10 @@ export default function Filter({ productCount, onSearch, locations }) {
         newQuery += buildQuery(refEl, value);
       }
     }
-    console.log("Generated query:", newQuery); // For debugging
+    // Add the direction to the query
+    newQuery += buildQuery("direction", direction);
+
+    // Add the query to the URL
     setQuery(newQuery);
     onSearch(newQuery); // Call onSearch with the new query
   };
@@ -144,7 +146,10 @@ export default function Filter({ productCount, onSearch, locations }) {
                 <div className="dropdown-item">
                   <Select
                     refEl={refEls.order_by}
-                    options={orderByOptions}
+                    options={[
+                      { id: "price", name: "Price" },
+                      { id: "name", name: "Name" },
+                    ]}
                     title="Order by"
                     addlClass="is-fullwidth"
                   />
