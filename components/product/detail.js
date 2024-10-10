@@ -13,7 +13,6 @@ export function Detail({ product, like, unlike }) {
   const [showError, setShowError] = useState(false)
   const { profile } = useAppContext()
   const [users, setUsers] = useState([])
-  console.log("Profile details:", profile)
 
   useEffect(() => {
     fetchUsers()
@@ -22,7 +21,6 @@ export function Detail({ product, like, unlike }) {
   const fetchUsers = async () => {
     try {
       const data = await getUsers()
-      console.log("Users data received:", data)
       setUsers(data)
     } catch (error) {
       console.error("Error fetching users:", error)
@@ -40,16 +38,10 @@ export function Detail({ product, like, unlike }) {
     })
   }
 
-  // currently only sending the username (found in the services)
-  // need to structure a product_id. recipient_id, and recommender_id
-      //profile.id === recommender_id
-      //FIXME: product_id ???
-      //FIXME: ??? === recipient_id
-
   const recommendProductEvent = () => {
     const recipientId = getTargetUserIdFromUsername(usernameEl.current.value)
     if (recipientId) {
-      recommendProduct(product.id, profile.id, recipientId).then((res) => {
+      recommendProduct(product.id, profile.user.id, recipientId).then((res) => {
         if (res) {
           setShowError(true)
         } else {
@@ -62,18 +54,6 @@ export function Detail({ product, like, unlike }) {
       setShowError(true)
     }
   }
-
-  // const recommendProductEvent = () => {
-  //   recommendProduct(product.id, profile.id, usernameEl.current.value).then((res) => {
-  //     if (res) {
-  //       setShowError(true)
-  //     } else {
-  //       setShowModal(false)
-  //       setShowError(false)
-  //       usernameEl.current.value = ""
-  //     }
-  //   })
-  // }
 
   return (
     <>
